@@ -141,63 +141,63 @@ elif page in FORMS:
             file_name=f"{page}_report.csv",
             mime="text/csv"
         )
-# ================================
-# 📘 MB GENERATOR
-# ================================
+    # ================================
+    # 📘 MB GENERATOR
+    # ================================
 
-elif main_section == "MB Generator":
+    elif main_section == "MB Generator":
 
-    import pandas as pd
+        import pandas as pd
 
-    st.title("📘 Farm Pond MB Generator")
+        st.title("📘 Farm Pond MB Generator")
 
-    # ---------------- LOAD FORMS ----------------
+        # ---------------- LOAD FORMS ----------------
 
-    df_mb1 = load_odk_data(FORMS["Farm Pond MB 1"]["form_id"])
-    df_mb2 = load_odk_data(FORMS["Farm Pond MB 2"]["form_id"])
+        df_mb1 = load_odk_data(FORMS["Farm Pond MB 1"]["form_id"])
+        df_mb2 = load_odk_data(FORMS["Farm Pond MB 2"]["form_id"])
 
-    # ---------------- PROJECT TAG ----------------
+        # ---------------- PROJECT TAG ----------------
 
-    df_mb1["project"] = "Project 1"
-    df_mb2["project"] = "Project 2"
+        df_mb1["project"] = "Project 1"
+        df_mb2["project"] = "Project 2"
 
-    # ---------------- MERGE DATA ----------------
+        # ---------------- MERGE DATA ----------------
 
-    df_mb = pd.concat([df_mb1, df_mb2], ignore_index=True)
+        df_mb = pd.concat([df_mb1, df_mb2], ignore_index=True)
 
-    # ---------------- CHECK ----------------
+        # ---------------- CHECK ----------------
 
-    if df_mb.empty:
-        st.warning("No MB data found")
+        if df_mb.empty:
+            st.warning("No MB data found")
 
-    else:
+        else:
 
-        st.success(f"Loaded {len(df_mb)} records")
+            st.success(f"Loaded {len(df_mb)} records")
 
-        # ---------------- FARMER SELECT ----------------
+            # ---------------- FARMER SELECT ----------------
 
-        farmer_col = "pd.fish_farmer"
+            farmer_col = "pd.fish_farmer"
 
-        farmers = sorted(
-            df_mb[farmer_col]
-            .dropna()
-            .unique()
-        )
+            farmers = sorted(
+                df_mb[farmer_col]
+                .dropna()
+                .unique()
+            )
 
-        selected_farmer = st.selectbox(
-            "Select Farmer",
-            farmers
-        )
+            selected_farmer = st.selectbox(
+                "Select Farmer",
+                farmers
+            )
 
-        # ---------------- FILTER ----------------
+            # ---------------- FILTER ----------------
 
-        farmer_df = df_mb[
-            df_mb[farmer_col] == selected_farmer
-        ]
+            farmer_df = df_mb[
+                df_mb[farmer_col] == selected_farmer
+            ]
 
-        st.write("### Farmer Data")
+            st.write("### Farmer Data")
 
-        st.dataframe(
-            farmer_df,
-            use_container_width=True
-        )
+            st.dataframe(
+                farmer_df,
+                use_container_width=True
+            )
