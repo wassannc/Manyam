@@ -42,16 +42,9 @@ def load_odk_data(form_id):
 
     url = f"{ODK_URL}/v1/projects/{PROJECT_ID}/forms/{form_id}.svc/Submissions"
 
-    response = requests.get(
-        url,
-        auth=(USERNAME, PASSWORD),
-        allow_redirects=False
-    )
-    
-    st.write("Request URL:", url)
-    st.write("Status:", response.status_code)
-    st.write("Redirect:", response.headers.get("Location"))
-    st.write("Response:", response.text[:1000])
+    if response.status_code != 200:
+        st.error(f"Error: {response.status_code}")
+        return pd.DataFrame()
 
     if response.status_code != 200:
         st.error(
