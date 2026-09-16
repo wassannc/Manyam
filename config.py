@@ -1,8 +1,8 @@
 FORMS = {
     "1. NF- Register": {
         "form_id": "NF- Register",
-        "columns": ["plot_reg.date","plot_reg.block","plot_reg.gp","plot_reg.village","plot_reg.farmer_name","plot_reg.spouse","plot_reg.season","Crop Model Final","plot_reg.main_crop","plot_reg.sowing_date"],
-        "block_col": "plot_reg.block"
+        "columns": ["plot_reg-date","plot_reg-block","plot_reg-gp","plot_reg-village","plot_reg-farmer_name","plot_reg-spouse","plot_reg-season","plot_reg-crop_model","plot_reg-main_crop","plot_reg-sowing_date"],
+        "block_col": "plot_reg-block"
     },
     "1.1 NF- Activities": {
         "form_id": "NF- Activities",
