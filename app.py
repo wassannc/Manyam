@@ -572,6 +572,124 @@ if main_section == "Impact Assessment":
         st.error(
             f"Impact Assessment error: {e}"
         )
+    # ------------------------------------------
+    # ADDITIONAL INCOME BY INTERVENTION
+    # ------------------------------------------
+    
+    st.subheader("Additional Income by Intervention")
+    
+    # Intervention columns where -ai means Additional Income
+    intervention_ai_cols = {
+        "Eco Farmponds": "Eco Farmponds-ai",
+        "Solar Irrigation": "Solar Irrigation-ai",
+        "Fish WB's": "Fish_WB's-ai",
+        "Mobile Irrigation": "Mobile Irrigation-ai",
+        "BRC": "BRC-ai",
+        "ASC": "ASC-ai",
+        "Processing Hubs": "Processing Hubs-ai",
+        "Cashew/RoFR": "Cashew/RoFR-ai",
+        "Turmeric": "Turmeric-ai",
+        "Crop Diversity": "Crop Diversity-ai",
+        "BYP_NS": "BYP_NS-ai",
+        "BYP_BFE": "BYP_BFE-ai"
+    }
+    
+    impact_rows = []
+    
+    working_hh_count = len(working_hhs_village)
+    
+    for intervention, col in intervention_ai_cols.items():
+    
+        if col not in working_hhs_village.columns:
+            continue
+    
+        income = pd.to_numeric(
+            working_hhs_village[col],
+            errors="coerce"
+        ).fillna(0)
+    
+        # HHs having additional income from this intervention
+        covered_hhs = int((income > 0).sum())
+    
+        # Total additional income
+        total_additional_income = income.sum()
+    
+        # Average among HHs receiving additional income
+        if covered_hhs > 0:
+            avg_additional_income = (
+                total_additional_income / covered_hhs
+            )
+        else:
+            avg_additional_income = 0
+    
+        # Percentage of working HHs
+        if working_hh_count > 0:
+            coverage_pct = (
+                covered_hhs / working_hh_count
+            ) * 100
+        else:
+            coverage_pct = 0
+    
+        impact_rows.append({
+            "Intervention": intervention,
+            "HHs Covered": covered_hhs,
+            "% of Working HHs": coverage_pct,
+            "Total Additional Income": total_additional_income,
+            "Avg. Additional Income / HH": avg_additional_income
+        })
+    
+    
+    impact_table = pd.DataFrame(impact_rows)
+    # ------------------------------------------
+    # DISPLAY TABLE
+    # ------------------------------------------
+    
+    if not impact_table.empty:
+    
+        display_table = impact_table.copy()
+    
+        display_table["% of Working HHs"] = (
+            display_table["% of Working HHs"]
+            .round(1)
+            .astype(str)
+            + "%"
+        )
+    
+        display_table["Total Additional Income"] = (
+            display_table["Total Additional Income"]
+            .round(0)
+            .apply(lambda x: f"₹{x:,.0f}")
+        )
+    
+        display_table["Avg. Additional Income / HH"] = (
+            display_table["Avg. Additional Income / HH"]
+            .round(0)
+            .apply(lambda x: f"₹{x:,.0f}")
+        )
+    
+        st.dataframe(
+            display_table,
+            use_container_width=True,
+            hide_index=True
+        )
+    # ------------------------------------------
+    # GRAPH
+    # ------------------------------------------
+    
+    if not impact_table.empty:
+    
+        chart_df = impact_table[
+            ["Intervention", "Avg. Additional Income / HH"]
+        ].copy()
+    
+        chart_df = chart_df.sort_values(
+            "Avg. Additional Income / HH",
+            ascending=False
+        )
+    
+        st.bar_chart(
+            chart_df.set_index("Intervention")
+        )
 
     # ==========================================
     # INCOME CHANGE BY NUMBER OF INTERVENTIONS
