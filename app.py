@@ -370,120 +370,120 @@ if main_section == "Impact Assessment":
             f"Impact Assessment error: {e}"
         )
 
-            # ==========================================
-            # INCOME CHANGE BY NUMBER OF INTERVENTIONS
-            # ==========================================
-            
-            st.subheader("Income Change by Number of Covered Interventions")
-            
-            intervention_col = "Covered interventions"
-            
-            if intervention_col not in working_hhs.columns:
-            
-                st.warning(
-                    f"Column not found: {intervention_col}"
-                )
-            
-            else:
-            
-                impact_df = working_hhs[
-                    [intervention_col, baseline_col, endline_col]
-                ].copy()
-            
-                # Convert to numeric
-                impact_df[intervention_col] = pd.to_numeric(
-                    impact_df[intervention_col],
-                    errors="coerce"
-                )
-            
-                impact_df[baseline_col] = pd.to_numeric(
-                    impact_df[baseline_col],
-                    errors="coerce"
-                )
-            
-                impact_df[endline_col] = pd.to_numeric(
-                    impact_df[endline_col],
-                    errors="coerce"
-                )
-            
-                # Keep households with all required values
-                impact_df = impact_df.dropna(
-                    subset=[
-                        intervention_col,
-                        baseline_col,
-                        endline_col
-                    ]
-                )
-            
-                # Keep 1 to 6 interventions
-                impact_df = impact_df[
-                    impact_df[intervention_col].between(1, 6)
+        # ==========================================
+        # INCOME CHANGE BY NUMBER OF INTERVENTIONS
+        # ==========================================
+        
+        st.subheader("Income Change by Number of Covered Interventions")
+        
+        intervention_col = "Covered interventions"
+        
+        if intervention_col not in working_hhs.columns:
+        
+            st.warning(
+                f"Column not found: {intervention_col}"
+            )
+        
+        else:
+        
+            impact_df = working_hhs[
+                [intervention_col, baseline_col, endline_col]
+            ].copy()
+        
+            # Convert to numeric
+            impact_df[intervention_col] = pd.to_numeric(
+                impact_df[intervention_col],
+                errors="coerce"
+            )
+        
+            impact_df[baseline_col] = pd.to_numeric(
+                impact_df[baseline_col],
+                errors="coerce"
+            )
+        
+            impact_df[endline_col] = pd.to_numeric(
+                impact_df[endline_col],
+                errors="coerce"
+            )
+        
+            # Keep households with all required values
+            impact_df = impact_df.dropna(
+                subset=[
+                    intervention_col,
+                    baseline_col,
+                    endline_col
                 ]
-            
-                # Calculate income change
-                impact_df["Income Change"] = (
-                    impact_df[endline_col]
-                    - impact_df[baseline_col]
+            )
+        
+            # Keep 1 to 6 interventions
+            impact_df = impact_df[
+                impact_df[intervention_col].between(1, 6)
+            ]
+        
+            # Calculate income change
+            impact_df["Income Change"] = (
+                impact_df[endline_col]
+                - impact_df[baseline_col]
+            )
+        
+            # Group by number of interventions
+            intervention_summary = (
+                impact_df
+                .groupby(intervention_col)
+                .agg(
+                    HHs=(intervention_col, "size"),
+                    Avg_Baseline=(baseline_col, "mean"),
+                    Avg_Endline=(endline_col, "mean"),
+                    Avg_Change=("Income Change", "mean")
                 )
-            
-                # Group by number of interventions
-                intervention_summary = (
-                    impact_df
-                    .groupby(intervention_col)
-                    .agg(
-                        HHs=(intervention_col, "size"),
-                        Avg_Baseline=(baseline_col, "mean"),
-                        Avg_Endline=(endline_col, "mean"),
-                        Avg_Change=("Income Change", "mean")
-                    )
-                    .reset_index()
-                )
-            
-                # Percentage change
-                intervention_summary["Change_%"] = (
-                    intervention_summary["Avg_Change"]
-                    / intervention_summary["Avg_Baseline"]
-                    * 100
-                )
-            
-                # Rename columns
-                intervention_summary = intervention_summary.rename(
-                    columns={
-                        intervention_col: "No. of Covered Interventions",
-                        "Avg_Baseline": "Avg Baseline Income",
-                        "Avg_Endline": "Avg Endline Income",
-                        "Avg_Change": "Avg Income Change",
-                        "Change_%": "Change %"
-                    }
-                )
-            
-                # Format
-                intervention_summary[
-                    "Avg Baseline Income"
-                ] = intervention_summary[
-                    "Avg Baseline Income"
-                ].round(0)
-            
-                intervention_summary[
-                    "Avg Endline Income"
-                ] = intervention_summary[
-                    "Avg Endline Income"
-                ].round(0)
-            
-                intervention_summary[
-                    "Avg Income Change"
-                ] = intervention_summary[
-                    "Avg Income Change"
-                ].round(0)
-            
-                intervention_summary[
-                    "Change %"
-                ] = intervention_summary[
-                    "Change %"
-                ].round(1)
-            
-                st.dataframe(
-                    intervention_summary,
-                    use_container_width=True,
-                    hide_index=True
-                )
+                .reset_index()
+            )
+        
+            # Percentage change
+            intervention_summary["Change_%"] = (
+                intervention_summary["Avg_Change"]
+                / intervention_summary["Avg_Baseline"]
+                * 100
+            )
+        
+            # Rename columns
+            intervention_summary = intervention_summary.rename(
+                columns={
+                    intervention_col: "No. of Covered Interventions",
+                    "Avg_Baseline": "Avg Baseline Income",
+                    "Avg_Endline": "Avg Endline Income",
+                    "Avg_Change": "Avg Income Change",
+                    "Change_%": "Change %"
+                }
+            )
+        
+            # Format
+            intervention_summary[
+                "Avg Baseline Income"
+            ] = intervention_summary[
+                "Avg Baseline Income"
+            ].round(0)
+        
+            intervention_summary[
+                "Avg Endline Income"
+            ] = intervention_summary[
+                "Avg Endline Income"
+            ].round(0)
+        
+            intervention_summary[
+                "Avg Income Change"
+            ] = intervention_summary[
+                "Avg Income Change"
+            ].round(0)
+        
+            intervention_summary[
+                "Change %"
+            ] = intervention_summary[
+                "Change %"
+            ].round(1)
+        
+            st.dataframe(
+                intervention_summary,
+                use_container_width=True,
+                hide_index=True
+            )
