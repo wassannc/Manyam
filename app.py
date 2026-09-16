@@ -287,7 +287,7 @@ if main_section == "Impact Assessment":
         working_households = len(working_hhs_village)
         
         total_gps = (
-            total_village_df["GP"]
+            total_village_df["Panchayat"]
             .dropna()
             .astype(str)
             .str.strip()
