@@ -360,7 +360,7 @@ if main_section == "Impact Assessment":
 
             st.caption(
                 f"Income impact calculated for {valid_households} "
-                f"Working HHs with both baseline and endline income data."
+                f"Working HHs with both baseline and endline Income data."
             )
 
     except Exception as e:
