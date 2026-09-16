@@ -236,6 +236,23 @@ if main_section == "Impact Assessment":
             "Select Village",
             villages
         )
+        # ------------------------------------------
+        # FILTER DATA FOR SELECTED VILLAGE
+        # ------------------------------------------
+        
+        total_village_df = total_list[
+            total_list["Village"]
+            .astype(str)
+            .str.strip()
+            .eq(selected_village)
+        ].copy()
+        
+        working_hhs_village = working_hhs[
+            working_hhs["Village"]
+            .astype(str)
+            .str.strip()
+            .eq(selected_village)
+        ].copy()
     
     else:
         st.error(
@@ -258,23 +275,19 @@ if main_section == "Impact Assessment":
     try:
         # Load Google Sheet data
         total_list, working_hhs = load_manyam_google_sheets()
-
-        # -------------------------------
-        # HOUSEHOLD COVERAGE
-        # -------------------------------
-
-        st.subheader("Coverage")
-
-        # Calculate coverage
-        total_households = len(total_list)
-        working_households = len(working_hhs)
         
-        # Unique GPs and Villages
-        gp_col = "Panchayat"
-        village_col = "Village"
+        # ------------------------------------------
+        # COVERAGE
+        # ------------------------------------------
+        
+        st.subheader("Coverage")
+        
+        total_households = len(total_village_df)
+        
+        working_households = len(working_hhs_village)
         
         total_gps = (
-            total_list[gp_col]
+            total_village_df["GP"]
             .dropna()
             .astype(str)
             .str.strip()
@@ -284,7 +297,7 @@ if main_section == "Impact Assessment":
         )
         
         total_villages = (
-            total_list[village_col]
+            total_village_df["Village"]
             .dropna()
             .astype(str)
             .str.strip()
@@ -293,7 +306,6 @@ if main_section == "Impact Assessment":
             .nunique()
         )
         
-        # Display
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
