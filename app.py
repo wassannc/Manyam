@@ -232,27 +232,36 @@ if main_section == "Impact Assessment":
             villages[villages != ""].unique().tolist()
         )
     
+        village_options = ["All Villages"] + villages
+
         selected_village = st.selectbox(
             "Select Village",
-            villages
+            village_options
         )
         # ------------------------------------------
         # FILTER DATA FOR SELECTED VILLAGE
         # ------------------------------------------
         
-        total_village_df = total_list[
-            total_list["Village"]
-            .astype(str)
-            .str.strip()
-            .eq(selected_village)
-        ].copy()
+        if selected_village == "All Villages":
+
+            total_village_df = total_list.copy()
+            working_hhs_village = working_hhs.copy()
         
-        working_hhs_village = working_hhs[
-            working_hhs["Village"]
-            .astype(str)
-            .str.strip()
-            .eq(selected_village)
-        ].copy()
+        else:
+        
+            total_village_df = total_list[
+                total_list["Village"]
+                .astype(str)
+                .str.strip()
+                .eq(selected_village)
+            ].copy()
+        
+            working_hhs_village = working_hhs[
+                working_hhs["Village"]
+                .astype(str)
+                .str.strip()
+                .eq(selected_village)
+            ].copy()
     
     else:
         st.error(
