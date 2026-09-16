@@ -20,7 +20,7 @@ if main_section == "MIS-Reports":
 else:
     page = "MIS-Status"
 
-if page == "MIS-Status":
+elif page == "MIS-Status":
     import pandas as pd
     import calendar
 
