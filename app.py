@@ -219,25 +219,50 @@ if main_section == "Impact Assessment":
         # HOUSEHOLD COVERAGE
         # -------------------------------
 
+        st.subheader("Coverage")
+
+        # Calculate coverage
         total_households = len(total_list)
         working_households = len(working_hhs)
-
-        st.subheader("Household Coverage")
-
-        col1, col2 = st.columns(2)
-
+        
+        # Unique GPs and Villages
+        gp_col = "GP"
+        village_col = "Village"
+        
+        total_gps = (
+            total_list[gp_col]
+            .dropna()
+            .astype(str)
+            .str.strip()
+            .replace("", pd.NA)
+            .dropna()
+            .nunique()
+        )
+        
+        total_villages = (
+            total_list[village_col]
+            .dropna()
+            .astype(str)
+            .str.strip()
+            .replace("", pd.NA)
+            .dropna()
+            .nunique()
+        )
+        
+        # Display
+        col1, col2, col3, col4 = st.columns(4)
+        
         with col1:
-            st.metric(
-                "Total Households",
-                total_households
-            )
-
+            st.metric("Total GPs", total_gps)
+        
         with col2:
-            st.metric(
-                "Working Households",
-                working_households
-            )
-
+            st.metric("Total Villages", total_villages)
+        
+        with col3:
+            st.metric("Total Households", total_households)
+        
+        with col4:
+            st.metric("Working Households", working_households)
         # -------------------------------
         # CHECK INCOME COLUMNS
         # -------------------------------
