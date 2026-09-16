@@ -17,10 +17,12 @@ if main_section == "MIS-Reports":
         "Select Form",
         list(FORMS.keys())
     )
-else:
+elif main_section == "MIS-Status":
     page = "MIS-Status"
+else:
+    page = None
 
-elif page == "MIS-Status":
+if page == "MIS-Status":
     import pandas as pd
     import calendar
 
@@ -146,7 +148,7 @@ elif page in FORMS:
 # 📘 MB GENERATOR
 # ================================
 
-elif main_section == "MB Generator":
+if main_section == "MB Generator":
     import pandas as pd
 
     st.title("📘 Farm Pond MB Generator")
@@ -205,7 +207,7 @@ elif main_section == "MB Generator":
 # IMPACT ASSESSMENT
 # ==========================================
 
-elif main_section == "Impact Assessment":
+if main_section == "Impact Assessment":
 
     st.title("📊 Impact Assessment")
 
