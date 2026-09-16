@@ -44,8 +44,14 @@ def load_odk_data(form_id):
 
     response = requests.get(
         url,
-        auth=(USERNAME, PASSWORD)
+        auth=(USERNAME, PASSWORD),
+        allow_redirects=False
     )
+    
+    st.write("Request URL:", url)
+    st.write("Status:", response.status_code)
+    st.write("Redirect:", response.headers.get("Location"))
+    st.write("Response:", response.text[:1000])
 
     if response.status_code != 200:
         st.error(
