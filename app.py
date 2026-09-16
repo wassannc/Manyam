@@ -487,3 +487,24 @@ if main_section == "Impact Assessment":
             use_container_width=True,
             hide_index=True
         )
+
+        # ==========================================
+        # GRAPH - INCOME CHANGE BY NO. OF INTERVENTIONS
+        # ==========================================
+    
+        st.subheader("Average Income Change by Number of Covered Interventions")
+    
+        chart_df = intervention_summary[
+            ["No. of Covered Interventions", "Change %"]
+        ].copy()
+    
+        chart_df = chart_df.set_index(
+            "No. of Covered Interventions"
+        )
+    
+        st.bar_chart(
+            chart_df,
+            y="Change %",
+            x_label="Number of Covered Interventions",
+            y_label="Average Income Change (%)"
+        )
