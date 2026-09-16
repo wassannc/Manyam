@@ -208,6 +208,7 @@ if main_section == "MB Generator":
 # ==========================================
 
 if main_section == "Impact Assessment":
+    total_list, working_hhs = load_manyam_google_sheets()
 
     st.title("📊 Impact Assessment")
     # ------------------------------------------
