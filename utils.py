@@ -1,6 +1,36 @@
 import streamlit as st
 import requests
+import gspread
+from google.oauth2.service_account import Credentials
 import pandas as pd
+
+def load_manyam_google_sheets():
+
+    SCOPES = [
+        "https://www.googleapis.com/auth/spreadsheets.readonly",
+        "https://www.googleapis.com/auth/drive.readonly"
+    ]
+
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=SCOPES
+    )
+
+    client = gspread.authorize(creds)
+
+    spreadsheet = client.open_by_key(
+        "1HlLJW9CrWkKZ6xN4zd9T7IYlLaWclJTofyv_DRQXebA"
+    )
+
+    total_list = pd.DataFrame(
+        spreadsheet.worksheet("Total list").get_all_records()
+    )
+
+    working_hhs = pd.DataFrame(
+        spreadsheet.worksheet("Working HHs").get_all_records()
+    )
+
+    return total_list, working_hhs
 
 ODK_URL = st.secrets["ODK_URL"]
 USERNAME = st.secrets["USERNAME"]
