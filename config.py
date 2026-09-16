@@ -14,16 +14,7 @@ FORMS = {
         "columns": ["SubmissionDate","table_list_pd.block","table_list_pd.brc_unit","table_list_pd.product_name","table_list_pd.brc_sale_date","table_list_pd.dj_sale_farmer","table_list_pd.gender","table_list_pd.sale_village","table_list_sd.sale_qty","table_list_sd.total_income","table_list_cd.crops","table_list_cd.crop_ext"],
         "block_col": "table_list_pd.block"
     },
-      "3. Livestock": {
-        "form_id": "Livestock",
-        "columns": ["table_list_df.Month","table_list_df.Monthly_MIS","table_list_df.block","table_list_df.gp","table_list_df.village","table_list_df.livestock_type","table_list_df.Farmer"],
-        "block_col": "table_list_df.block"
-    },
-    "Intensification of Orchards": {
-        "form_id": "Orchards_Intensification",
-        "columns": ["SubmissionDate","basic_info.block","basic_info.gp","basic_info.village","basic_info.orchard_type","basic_info.farmer_add","type"],
-        "block_col": "basic_info.block"
-    },
+    
     "Micro Enterprizes": {
         "form_id": "Micro Enterprizes",
         "columns": ["SubmissionDate","table_list_pd.block","table_list_pd.gp","table_list_pd.village","table_list_pd1.farmer_name","table_list_pd1.processing_hub_tool","table_list_pd1.processing_date","table_list_pd1.processed_for","table_list_pd2.processing_farmer_village","table_list_pd2.processing_farmer","table_list_pd2.processing_qty_kgs","table_list_pd2.rent_amount","table_list_pd3.Data_sub_by"],
