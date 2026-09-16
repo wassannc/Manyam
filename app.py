@@ -210,6 +210,47 @@ if main_section == "MB Generator":
 if main_section == "Impact Assessment":
 
     st.title("📊 Impact Assessment")
+    # ------------------------------------------
+    # VILLAGE FILTER
+    # ------------------------------------------
+
+    village_col = "Village"
+
+    if village_col in total_list.columns:
+
+        villages = (
+            total_list[village_col]
+            .dropna()
+            .astype(str)
+            .str.strip()
+        )
+
+        villages = sorted(
+            [v for v in villages if v]
+        )
+
+        selected_village = st.selectbox(
+            "Select Village",
+            villages
+        )
+
+    else:
+        st.error(
+            f"Village column '{village_col}' not found in Total list."
+        )
+        st.stop()
+        # ------------------------------------------
+        # FILTER WORKING HHs FOR SELECTED VILLAGE
+        # ------------------------------------------
+    
+        working_village_col = "Village"
+    
+        working_hhs_village = working_hhs[
+            working_hhs[working_village_col]
+            .astype(str)
+            .str.strip()
+            .eq(selected_village)
+        ].copy()
 
     try:
         # Load Google Sheet data
@@ -411,7 +452,7 @@ if main_section == "Impact Assessment":
     
     else:
     
-        impact_df = working_hhs[
+        impact_df = working_hhs_village[
             [intervention_col, baseline_col, endline_col]
         ].copy()
     
