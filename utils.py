@@ -48,7 +48,19 @@ def load_odk_data(form_id):
     )
 
     if response.status_code != 200:
-        st.error(f"Error: {response.status_code}")
+        st.error(
+            f"""
+            ODK Error: {response.status_code}
+    
+            Form ID: {form_id}
+    
+            API URL:
+            {url}
+    
+            Server Response:
+            {response.text[:1000]}
+            """
+        )
         return pd.DataFrame()
 
     data = response.json()
