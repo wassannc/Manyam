@@ -3,7 +3,6 @@ from config import FORMS
 from utils import load_odk_data, load_manyam_google_sheets
 
 st.set_page_config(page_title="MIS Tracking-Manyam", layout="wide")
-st.title("📊 MIS Tracking - Manyam")
 
 st.sidebar.title("Menu")
 
