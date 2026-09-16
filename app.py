@@ -1,6 +1,21 @@
 import streamlit as st
 from config import FORMS
-from utils import load_odk_data
+from utils import load_odk_data, load_manyam_google_sheets
+# -------- MANYAM GOOGLE SHEETS TEST --------
+try:
+    total_list, working_hhs = load_manyam_google_sheets()
+
+    st.success("Manyam Google Sheet connected successfully")
+
+    st.write("Total list:", total_list.shape)
+    st.write("Working HHs:", working_hhs.shape)
+
+    st.write("Working HHs columns:")
+    st.write(working_hhs.columns.tolist())
+
+except Exception as e:
+    st.error(f"Google Sheet connection error: {e}")
+
 st.set_page_config(page_title="MIS Tracking-Manyam", layout="wide")
 st.title("📊 MIS Tracking - Manyam")
 
