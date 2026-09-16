@@ -241,7 +241,7 @@ if main_section == "Impact Assessment":
         # CHECK INCOME COLUMNS
         # -------------------------------
 
-        baseline_col = "Baseline income"
+        baseline_col = "Baseline Income"
         endline_col = "Endline income"
 
         if baseline_col not in working_hhs.columns:
