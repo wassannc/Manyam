@@ -226,7 +226,7 @@ if main_section == "Impact Assessment":
         working_households = len(working_hhs)
         
         # Unique GPs and Villages
-        gp_col = "GP"
+        gp_col = "Panchayat"
         village_col = "Village"
         
         total_gps = (
