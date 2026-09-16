@@ -201,3 +201,169 @@ elif main_section == "MB Generator":
             farmer_df,
             use_container_width=True
         )
+# ==========================================
+# IMPACT ASSESSMENT
+# ==========================================
+
+elif main_section == "Impact Assessment":
+
+    st.title("📊 Impact Assessment")
+
+    try:
+        # Load Google Sheet data
+        total_list, working_hhs = load_manyam_google_sheets()
+
+        # -------------------------------
+        # HOUSEHOLD COVERAGE
+        # -------------------------------
+
+        total_households = len(total_list)
+        working_households = len(working_hhs)
+
+        st.subheader("Household Coverage")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric(
+                "Total Households",
+                total_households
+            )
+
+        with col2:
+            st.metric(
+                "Working Households",
+                working_households
+            )
+
+        # -------------------------------
+        # CHECK INCOME COLUMNS
+        # -------------------------------
+
+        baseline_col = "Baseline income"
+        endline_col = "Endline income"
+
+        if baseline_col not in working_hhs.columns:
+
+            st.error(
+                f"Column not found: {baseline_col}"
+            )
+
+        elif endline_col not in working_hhs.columns:
+
+            st.error(
+                f"Column not found: {endline_col}"
+            )
+
+        else:
+
+            # Convert income columns to numbers
+            baseline = pd.to_numeric(
+                working_hhs[baseline_col],
+                errors="coerce"
+            )
+
+            endline = pd.to_numeric(
+                working_hhs[endline_col],
+                errors="coerce"
+            )
+
+            # Keep households having both values
+            valid = baseline.notna() & endline.notna()
+
+            baseline_valid = baseline[valid]
+            endline_valid = endline[valid]
+
+            # -------------------------------
+            # INCOME CALCULATIONS
+            # -------------------------------
+
+            avg_baseline = baseline_valid.mean()
+            avg_endline = endline_valid.mean()
+
+            avg_change = avg_endline - avg_baseline
+
+            if avg_baseline > 0:
+                percentage_change = (
+                    avg_change / avg_baseline
+                ) * 100
+            else:
+                percentage_change = 0
+
+            # Household-level change
+            change = endline_valid - baseline_valid
+
+            increased = (change > 0).sum()
+            decreased = (change < 0).sum()
+            no_change = (change == 0).sum()
+
+            valid_households = len(change)
+
+            # -------------------------------
+            # INCOME IMPACT
+            # -------------------------------
+
+            st.subheader("Household Income Impact")
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric(
+                    "Average Baseline Income",
+                    f"₹{avg_baseline:,.0f}"
+                )
+
+            with col2:
+                st.metric(
+                    "Average Endline Income",
+                    f"₹{avg_endline:,.0f}"
+                )
+
+            with col3:
+                st.metric(
+                    "Average Income Change",
+                    f"₹{avg_change:,.0f}"
+                )
+
+            with col4:
+                st.metric(
+                    "Income Change",
+                    f"{percentage_change:.1f}%"
+                )
+
+            # -------------------------------
+            # HOUSEHOLDS BY CHANGE
+            # -------------------------------
+
+            st.subheader("Households by Income Change")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Income Increased",
+                    increased
+                )
+
+            with col2:
+                st.metric(
+                    "No Change",
+                    no_change
+                )
+
+            with col3:
+                st.metric(
+                    "Income Decreased",
+                    decreased
+                )
+
+            st.caption(
+                f"Income impact calculated for {valid_households} "
+                f"Working HHs with both baseline and endline income data."
+            )
+
+    except Exception as e:
+
+        st.error(
+            f"Impact Assessment error: {e}"
+        )
