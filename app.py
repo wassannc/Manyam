@@ -211,30 +211,32 @@ if main_section == "Impact Assessment":
     total_list, working_hhs = load_manyam_google_sheets()
 
     st.title("📊 Impact Assessment")
+    
     # ------------------------------------------
     # VILLAGE FILTER
     # ------------------------------------------
-
+    
     village_col = "Village"
-
+    
     if village_col in total_list.columns:
-
+    
         villages = (
             total_list[village_col]
             .dropna()
             .astype(str)
             .str.strip()
         )
-
+    
+        # Remove blank values AND duplicate village names
         villages = sorted(
-            [v for v in villages if v]
+            villages[villages != ""].unique().tolist()
         )
-
+    
         selected_village = st.selectbox(
             "Select Village",
             villages
         )
-
+    
     else:
         st.error(
             f"Village column '{village_col}' not found in Total list."
