@@ -829,22 +829,26 @@ if main_section == "Impact Assessment":
             x_label="Number of Covered Interventions",
             y_label="Average Income Change (%)"
         )
-        # ------------------------------------------
+        
+        # ==========================================
         # ACTIVITY CONTRIBUTION WITHIN
         # INTERVENTION-COUNT GROUP
-        # ------------------------------------------
+        # ==========================================
         
         st.subheader("Activity Contribution within Intervention Group")
         
-        # Select number of interventions
+        
         # ------------------------------------------
-        # CALCULATE NUMBER OF COVERED INTERVENTIONS
-        # FOR EACH HOUSEHOLD
+        # CREATE COPY
         # ------------------------------------------
         
         impact_hhs = working_hhs_village.copy()
         
-        # Start with zero interventions
+        
+        # ------------------------------------------
+        # CALCULATE NUMBER OF COVERED INTERVENTIONS
+        # ------------------------------------------
+        
         impact_hhs["_covered_interventions"] = 0
         
         for activity, ai_col in intervention_ai_cols.items():
@@ -857,7 +861,6 @@ if main_section == "Impact Assessment":
                 errors="coerce"
             ).fillna(0)
         
-            # Count activity when additional income > 0
             impact_hhs["_covered_interventions"] += (
                 ai_values > 0
             ).astype(int)
@@ -895,35 +898,10 @@ if main_section == "Impact Assessment":
                 == int(selected_interventions)
             ].copy()
         
-        selected_interventions = st.selectbox(
-            "Select Number of Covered Interventions",
-            intervention_options,
-            key="impact_intervention_filter"
-        )
         
         # ------------------------------------------
-        # FILTER HOUSEHOLDS
+        # CALCULATE ACTIVITY CONTRIBUTION
         # ------------------------------------------
-        
-        if selected_interventions == "All":
-        
-            selected_hhs = working_hhs_village.copy()
-        
-        else:
-        
-            selected_interventions = int(selected_interventions)
-        
-            selected_hhs = working_hhs_village[
-                working_hhs_village["No. of Covered Interventions"]
-                == selected_interventions
-            ].copy()
-
-        # ------------------------------------------
-        # ACTIVITY CONTRIBUTION WITHIN
-        # INTERVENTION GROUP
-        # ------------------------------------------
-        
-        st.subheader("Activity Contribution within Intervention Group")
         
         activity_group_rows = []
         
@@ -937,11 +915,16 @@ if main_section == "Impact Assessment":
                 errors="coerce"
             ).fillna(0)
         
-            # Number of HHs receiving additional income
-            covered_hhs = int((activity_income > 0).sum())
+            # HHs receiving income from this activity
+            covered_hhs = int(
+                (activity_income > 0).sum()
+            )
         
             # Total additional income from this activity
             total_income = activity_income.sum()
+        
+            if total_income <= 0:
+                continue
         
             activity_group_rows.append({
                 "Activity": activity,
@@ -950,11 +933,13 @@ if main_section == "Impact Assessment":
             })
         
         
-        activity_group_df = pd.DataFrame(activity_group_rows)
+        activity_group_df = pd.DataFrame(
+            activity_group_rows
+        )
         
         
         # ------------------------------------------
-        # CALCULATE CONTRIBUTION %
+        # CONTRIBUTION %
         # ------------------------------------------
         
         if not activity_group_df.empty:
@@ -976,7 +961,7 @@ if main_section == "Impact Assessment":
         
         
             # --------------------------------------
-            # DISPLAY TABLE
+            # TABLE
             # --------------------------------------
         
             display_group_df = activity_group_df.copy()
@@ -1016,109 +1001,6 @@ if main_section == "Impact Assessment":
         
             st.bar_chart(
                 chart_group_df.set_index("Activity")
-            )
-        
-        
-        # ------------------------------------------
-        # CALCULATE ACTIVITY-WISE AI
-        # ------------------------------------------
-        
-        activity_rows = []
-        
-        for activity, ai_col in intervention_ai_cols.items():
-        
-            if ai_col not in selected_hhs.columns:
-                continue
-        
-            ai_values = pd.to_numeric(
-                selected_hhs[ai_col],
-                errors="coerce"
-            ).fillna(0)
-        
-            total_ai = ai_values.sum()
-        
-            hh_count = int((ai_values > 0).sum())
-        
-            if total_ai > 0:
-        
-                activity_rows.append({
-                    "Activity": activity,
-                    "HHs with AI": hh_count,
-                    "Additional Income": total_ai
-                })
-        
-        
-        activity_df = pd.DataFrame(activity_rows)
-        
-        
-        # ------------------------------------------
-        # CONTRIBUTION %
-        # ------------------------------------------
-        
-        if not activity_df.empty:
-        
-            total_ai_all = activity_df["Additional Income"].sum()
-        
-            activity_df["Contribution %"] = (
-                activity_df["Additional Income"]
-                / total_ai_all
-            ) * 100
-        
-        
-            # --------------------------------------
-            # DISPLAY TABLE
-            # --------------------------------------
-        
-            display_activity = activity_df.copy()
-        
-            display_activity["Additional Income"] = (
-                display_activity["Additional Income"]
-                .round(0)
-                .apply(lambda x: f"₹{x:,.0f}")
-            )
-        
-            display_activity["Contribution %"] = (
-                display_activity["Contribution %"]
-                .round(1)
-                .astype(str)
-                + "%"
-            )
-        
-            st.dataframe(
-                display_activity,
-                use_container_width=True,
-                hide_index=True
-            )
-        
-        
-            # --------------------------------------
-            # GRAPH
-            # --------------------------------------
-        
-            if selected_interventions == "All":
-        
-                graph_title = (
-                    "Activity Contribution to Additional Income — All Households"
-                )
-        
-            else:
-        
-                graph_title = (
-                    f"Activity Contribution to Additional Income — "
-                    f"{selected_interventions} Interventions"
-                )
-        
-            st.subheader(graph_title)
-        
-            chart_df = activity_df[
-                ["Activity", "Contribution %"]
-            ].sort_values(
-                "Contribution %",
-                ascending=False
-            )
-        
-            st.bar_chart(
-                chart_df.set_index("Activity")
             )
         
         else:
