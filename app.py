@@ -837,13 +837,63 @@ if main_section == "Impact Assessment":
         st.subheader("Activity Contribution within Intervention Group")
         
         # Select number of interventions
+        # ------------------------------------------
+        # CALCULATE NUMBER OF COVERED INTERVENTIONS
+        # FOR EACH HOUSEHOLD
+        # ------------------------------------------
+        
+        impact_hhs = working_hhs_village.copy()
+        
+        # Start with zero interventions
+        impact_hhs["_covered_interventions"] = 0
+        
+        for activity, ai_col in intervention_ai_cols.items():
+        
+            if ai_col not in impact_hhs.columns:
+                continue
+        
+            ai_values = pd.to_numeric(
+                impact_hhs[ai_col],
+                errors="coerce"
+            ).fillna(0)
+        
+            # Count activity when additional income > 0
+            impact_hhs["_covered_interventions"] += (
+                ai_values > 0
+            ).astype(int)
+        
+        
+        # ------------------------------------------
+        # INTERVENTION FILTER
+        # ------------------------------------------
+        
         intervention_options = ["All"] + sorted(
-            intervention_summary_df["No. of Covered Interventions"]
-            .dropna()
-            .astype(int)
+            impact_hhs["_covered_interventions"]
             .unique()
             .tolist()
         )
+        
+        selected_interventions = st.selectbox(
+            "Select Number of Covered Interventions",
+            intervention_options,
+            key="impact_intervention_filter"
+        )
+        
+        
+        # ------------------------------------------
+        # FILTER HOUSEHOLDS
+        # ------------------------------------------
+        
+        if selected_interventions == "All":
+        
+            selected_hhs = impact_hhs.copy()
+        
+        else:
+        
+            selected_hhs = impact_hhs[
+                impact_hhs["_covered_interventions"]
+                == int(selected_interventions)
+            ].copy()
         
         selected_interventions = st.selectbox(
             "Select Number of Covered Interventions",
