@@ -690,6 +690,107 @@ if main_section == "Impact Assessment":
         st.bar_chart(
             chart_df.set_index("Intervention")
         )
+    # ------------------------------------------
+    # ACTIVITY-WISE % INCOME INCREASE
+    # ------------------------------------------
+    
+    st.subheader("Activity-wise Income Increase")
+    
+    activity_income_rows = []
+    
+    for activity, ai_col in intervention_ai_cols.items():
+    
+        if ai_col not in working_hhs_village.columns:
+            continue
+    
+        # Additional income from this activity
+        activity_income = pd.to_numeric(
+            working_hhs_village[ai_col],
+            errors="coerce"
+        ).fillna(0)
+    
+        # Households with additional income from this activity
+        activity_hhs = working_hhs_village[
+            activity_income > 0
+        ].copy()
+    
+        if activity_hhs.empty:
+            continue
+    
+        baseline = pd.to_numeric(
+            activity_hhs[baseline_col],
+            errors="coerce"
+        )
+    
+        endline = pd.to_numeric(
+            activity_hhs[endline_col],
+            errors="coerce"
+        )
+    
+        valid = (
+            baseline.notna()
+            & endline.notna()
+            & (baseline > 0)
+        )
+    
+        baseline_valid = baseline[valid]
+        endline_valid = endline[valid]
+    
+        if len(baseline_valid) == 0:
+            continue
+    
+        avg_baseline = baseline_valid.mean()
+        avg_endline = endline_valid.mean()
+    
+        income_increase_pct = (
+            (avg_endline - avg_baseline)
+            / avg_baseline
+        ) * 100
+    
+        activity_income_rows.append({
+            "Activity": activity,
+            "HHs": len(baseline_valid),
+            "Avg. Baseline Income": avg_baseline,
+            "Avg. Endline Income": avg_endline,
+            "Income Increased (%)": income_increase_pct
+        })
+    
+    activity_income_df = pd.DataFrame(activity_income_rows)
+
+    if not activity_income_df.empty:
+    
+        display_df = activity_income_df.copy()
+    
+        display_df["Avg. Baseline Income"] = (
+            display_df["Avg. Baseline Income"]
+            .round(0)
+            .apply(lambda x: f"₹{x:,.0f}")
+        )
+    
+        display_df["Avg. Endline Income"] = (
+            display_df["Avg. Endline Income"]
+            .round(0)
+            .apply(lambda x: f"₹{x:,.0f}")
+        )
+    
+        display_df["Income Increased (%)"] = (
+            display_df["Income Increased (%)"]
+            .round(1)
+            .astype(str)
+            + "%"
+        )
+    
+        st.dataframe(
+            display_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+    st.bar_chart(
+        activity_income_df.set_index("Activity")[
+            ["Income Increased (%)"]
+        ]
+    )
 
     # ==========================================
     # INCOME CHANGE BY NUMBER OF INTERVENTIONS
