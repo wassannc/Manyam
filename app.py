@@ -917,6 +917,106 @@ if main_section == "Impact Assessment":
                 working_hhs_village["No. of Covered Interventions"]
                 == selected_interventions
             ].copy()
+
+        # ------------------------------------------
+        # ACTIVITY CONTRIBUTION WITHIN
+        # INTERVENTION GROUP
+        # ------------------------------------------
+        
+        st.subheader("Activity Contribution within Intervention Group")
+        
+        activity_group_rows = []
+        
+        for activity, ai_col in intervention_ai_cols.items():
+        
+            if ai_col not in selected_hhs.columns:
+                continue
+        
+            activity_income = pd.to_numeric(
+                selected_hhs[ai_col],
+                errors="coerce"
+            ).fillna(0)
+        
+            # Number of HHs receiving additional income
+            covered_hhs = int((activity_income > 0).sum())
+        
+            # Total additional income from this activity
+            total_income = activity_income.sum()
+        
+            activity_group_rows.append({
+                "Activity": activity,
+                "HHs": covered_hhs,
+                "Additional Income": total_income
+            })
+        
+        
+        activity_group_df = pd.DataFrame(activity_group_rows)
+        
+        
+        # ------------------------------------------
+        # CALCULATE CONTRIBUTION %
+        # ------------------------------------------
+        
+        if not activity_group_df.empty:
+        
+            total_group_income = (
+                activity_group_df["Additional Income"].sum()
+            )
+        
+            if total_group_income > 0:
+        
+                activity_group_df["Contribution %"] = (
+                    activity_group_df["Additional Income"]
+                    / total_group_income
+                ) * 100
+        
+            else:
+        
+                activity_group_df["Contribution %"] = 0
+        
+        
+            # --------------------------------------
+            # DISPLAY TABLE
+            # --------------------------------------
+        
+            display_group_df = activity_group_df.copy()
+        
+            display_group_df["Additional Income"] = (
+                display_group_df["Additional Income"]
+                .round(0)
+                .apply(lambda x: f"₹{x:,.0f}")
+            )
+        
+            display_group_df["Contribution %"] = (
+                display_group_df["Contribution %"]
+                .round(1)
+                .astype(str)
+                + "%"
+            )
+        
+            st.dataframe(
+                display_group_df,
+                use_container_width=True,
+                hide_index=True
+            )
+        
+        
+            # --------------------------------------
+            # GRAPH
+            # --------------------------------------
+        
+            chart_group_df = activity_group_df[
+                ["Activity", "Contribution %"]
+            ].copy()
+        
+            chart_group_df = chart_group_df.sort_values(
+                "Contribution %",
+                ascending=False
+            )
+        
+            st.bar_chart(
+                chart_group_df.set_index("Activity")
+            )
         
         
         # ------------------------------------------
